@@ -153,6 +153,14 @@ Expected output:
 4. Color-coded CR values: Green (low), Yellow (medium), Red (high)
 5. Export data to Excel
 
+### 🔗 Galvanic Corrosion Simulator (NEW in v1.1.0)
+- 14 metals database from ASTM G82 galvanic series
+- Mixed potential theory calculations
+- Cathode/Anode area ratio effect
+- Real-time galvanic series bar chart
+- Severity classification per NACE SP0775
+- Engineering recommendations
+
 ## 🏗️ Project Structure
 
 ```
@@ -165,12 +173,16 @@ corrosim/
 │   ├── database.py              # SQLite database operations
 │   ├── tafel_engine.py          # Tafel analysis algorithms
 │   ├── splash_screen.py         # Splash screen widget
+│   ├── engines/                 # Analysis engines (NEW in v1.1.0)
+│   │   ├── __init__.py
+│   │   └── galvanic_engine.py   # Galvanic corrosion prediction
 │   ├── tabs/                    # Tab modules
 │   │   ├── __init__.py
 │   │   ├── import_tab.py        # Data import interface
 │   │   ├── tafel_tab.py         # Tafel analysis interface
 │   │   ├── prediction_tab.py    # Lifetime prediction
-│   │   └── comparison_tab.py    # Sample comparison
+│   │   ├── comparison_tab.py    # Sample comparison
+│   │   └── galvanic_tab.py      # Galvanic simulator (NEW)
 │   └── utils/                   # Utility modules
 │       ├── __init__.py
 │       └── constants.py         # Physical constants
