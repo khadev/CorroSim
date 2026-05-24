@@ -7,6 +7,7 @@ from PyQt6.QtGui import *
 from .theme import Theme, GLOBAL_STYLE, SIDEBAR_STYLE
 from .database import Database
 from .tabs import ImportTab, TafelTab, PredictionTab, ComparisonTab
+from .tabs.galvanic_tab import GalvanicTab
 
 
 class MainWindow(QMainWindow):
@@ -18,7 +19,6 @@ class MainWindow(QMainWindow):
         self.setMinimumSize(1200, 800)
         self.resize(1400, 900)
         
-        # Initialize components
         self.db = Database()
         self.nav_buttons = []
         
@@ -28,7 +28,6 @@ class MainWindow(QMainWindow):
         self.statusBar().showMessage("Ready - Import data to begin")
     
     def _setup_ui(self):
-        """Setup the user interface"""
         central = QWidget()
         self.setCentralWidget(central)
         main_layout = QHBoxLayout(central)
@@ -44,7 +43,6 @@ class MainWindow(QMainWindow):
         self.switch_tab(0)
     
     def _create_sidebar(self):
-        """Create navigation sidebar"""
         self.sidebar = QWidget()
         self.sidebar.setObjectName("sidebar")
         self.sidebar.setFixedWidth(200)
@@ -54,23 +52,21 @@ class MainWindow(QMainWindow):
         layout.setContentsMargins(12, 20, 12, 20)
         layout.setSpacing(6)
         
-        # Logo
         logo = QLabel("⚡ CorroSim")
         logo.setStyleSheet("font-size: 18px; font-weight: 700; color: white; background: transparent;")
         layout.addWidget(logo)
         layout.addSpacing(20)
         
-        # Navigation label
         nav_label = QLabel("NAVIGATION")
         nav_label.setStyleSheet("color: #94A3B8; font-size: 10px; font-weight: 600; background: transparent;")
         layout.addWidget(nav_label)
         
-        # Navigation buttons
         tabs = [
             ("📁", "Import", 0),
             ("⚡", "Tafel", 1),
             ("🔮", "Prediction", 2),
-            ("📊", "Compare", 3)
+            ("📊", "Compare", 3),
+            ("🔗", "Galvanic", 4),
         ]
         
         for icon, text, idx in tabs:
@@ -82,7 +78,6 @@ class MainWindow(QMainWindow):
         
         layout.addStretch()
         
-        # Status indicator
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
         sep.setStyleSheet("background-color: #334155; max-height: 1px;")
@@ -93,20 +88,21 @@ class MainWindow(QMainWindow):
         layout.addWidget(status)
     
     def _create_tabs(self):
-        """Create and setup all tabs"""
         self.tabs = QTabWidget()
         self.tabs.tabBar().setVisible(False)
         
-        # Create tab widgets
+        # Create all tab widgets
         self.import_widget = QWidget()
         self.tafel_widget = QWidget()
         self.prediction_widget = QWidget()
         self.comparison_widget = QWidget()
+        self.galvanic_widget = QWidget()
         
         self.tabs.addTab(self.import_widget, "Import")
         self.tabs.addTab(self.tafel_widget, "Tafel")
         self.tabs.addTab(self.prediction_widget, "Prediction")
         self.tabs.addTab(self.comparison_widget, "Compare")
+        self.tabs.addTab(self.galvanic_widget, "Galvanic")
         
         # Setup Import Tab
         self.import_tab = ImportTab()
@@ -119,26 +115,21 @@ class MainWindow(QMainWindow):
         
         # Setup Tafel Tab
         self.tafel_tab = TafelTab()
-        self.tafel_tab.setup(
-            parent=self.tafel_widget,
-            db=self.db
-        )
+        self.tafel_tab.setup(parent=self.tafel_widget, db=self.db)
         
         # Setup Prediction Tab
         self.prediction_tab = PredictionTab()
-        self.prediction_tab.setup(
-            parent=self.prediction_widget
-        )
+        self.prediction_tab.setup(parent=self.prediction_widget)
         
         # Setup Comparison Tab
         self.comparison_tab = ComparisonTab()
-        self.comparison_tab.setup(
-            parent=self.comparison_widget,
-            db=self.db
-        )
+        self.comparison_tab.setup(parent=self.comparison_widget, db=self.db)
+        
+        # Setup Galvanic Tab
+        self.galvanic_tab = GalvanicTab()
+        self.galvanic_tab.setup(parent=self.galvanic_widget)
     
     def switch_tab(self, index):
-        """Switch active tab"""
         self.tabs.setCurrentIndex(index)
         for i, btn in enumerate(self.nav_buttons):
             btn.setProperty("active", "true" if i == index else "false")
@@ -146,12 +137,10 @@ class MainWindow(QMainWindow):
             btn.style().polish(btn)
     
     def _load_tafel_data(self):
-        """Load latest data into Tafel tab"""
         if hasattr(self, 'tafel_tab'):
             self.tafel_tab._load_data()
     
     def _setup_menu(self):
-        """Setup menu bar"""
         menubar = self.menuBar()
         menubar.setStyleSheet(f"""
             QMenuBar {{
@@ -169,20 +158,17 @@ class MainWindow(QMainWindow):
         """)
         
         file_menu = menubar.addMenu("File")
-        
         exit_action = QAction("Exit", self)
         exit_action.setShortcut("Ctrl+Q")
         exit_action.triggered.connect(self.close)
         file_menu.addAction(exit_action)
         
         help_menu = menubar.addMenu("Help")
-        
         about_action = QAction("About", self)
         about_action.triggered.connect(self._show_about)
         help_menu.addAction(about_action)
     
     def _show_about(self):
-        """Show about dialog"""
         QMessageBox.about(
             self,
             "About CorroSim",
@@ -193,6 +179,7 @@ class MainWindow(QMainWindow):
             "<p><b>Features:</b></p>"
             "<ul>"
             "<li>Tafel Polarization Analysis</li>"
+            "<li>Galvanic Corrosion Simulation</li>"
             "<li>Lifetime Prediction Models</li>"
             "<li>Multi-Sample Comparison</li>"
             "<li>Data Export (PNG, PDF, Excel)</li>"
@@ -201,6 +188,5 @@ class MainWindow(QMainWindow):
         )
     
     def closeEvent(self, event):
-        """Handle window close event"""
         self.db.close()
         event.accept()

@@ -4,28 +4,35 @@ import sys
 import time
 from PyQt6.QtWidgets import QApplication
 
-from .splash_screen import SplashScreen
-from .app import MainWindow
-
 
 def main():
     """Application entry point"""
+    # CREATE QAPPLICATION FIRST - before any other PyQt import
     app = QApplication(sys.argv)
     app.setStyle('Fusion')
     
-    # Show splash screen with loading sequence
-    messages = [
-        "Initializing database...",
-        "Loading analysis modules...",
-        "Setting up user interface...",
-        "Preparing Tafel engine...",
-        "Starting application..."
+    # Only import splash AFTER QApplication exists
+    from corrosim.splash_screen import SplashScreen
+    from corrosim.app import MainWindow
+    
+    # Show splash screen
+    splash = SplashScreen()
+    
+    # Loading sequence
+    steps = [
+        (20, "Initializing database..."),
+        (40, "Loading analysis modules..."),
+        (60, "Setting up user interface..."),
+        (80, "Preparing engines..."),
+        (100, "Starting application...")
     ]
-    delays = [0.3, 0.3, 0.3, 0.3, 0.2]
     
-    splash = SplashScreen.show_loading_sequence(messages, delays)
+    for progress, message in steps:
+        splash.update_progress(progress, message)
+        time.sleep(0.3)
+        QApplication.processEvents()
     
-    # Create and show main window
+    # Create main window
     window = MainWindow()
     splash.close()
     window.show()
