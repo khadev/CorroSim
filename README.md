@@ -87,7 +87,8 @@ python run.py
 
 pip install -e .
 corrosim
-
+[![PyPI version](https://badge.fury.io/py/corrosim.svg)](https://pypi.org/project/corrosim/)
+[![Downloads](https://img.shields.io/pypi/dm/corrosim.svg)](https://pypi.org/project/corrosim/)
 
 ### Direct Install from GitHub
 
