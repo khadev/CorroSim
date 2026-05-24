@@ -19,9 +19,9 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setup(
     name="corrosim",
     version="1.1.0",
-    author="Khaled Oukil",
+    description="Professional Corrosion Analysis Platform - Tafel, Galvanic, Prediction & Comparison",
+    author="oukil khaled ibn El-walid",
     author_email="oukil.khaled@gmail.com",
-    description="Professional Corrosion Analysis Platform",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/khadev/CorroSim",
