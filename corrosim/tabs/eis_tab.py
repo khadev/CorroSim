@@ -1,13 +1,10 @@
-"""Tafel Analysis Tab"""
+"""EIS Analysis Tab - Professional Edition"""
 
 from PyQt6.QtWidgets import *
 from PyQt6.QtCore import *
 from PyQt6.QtGui import *
 
 import numpy as np
-import pandas as pd
-from io import StringIO
-
 import matplotlib
 matplotlib.use('Qt5Agg')
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -15,18 +12,18 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 from matplotlib.figure import Figure
 
 from ..theme import Theme
-from ..tafel_engine import TafelEngine
+from ..engines.eis_engine import EISEngine
 
 
-class TafelTab:
-    """Tab for Tafel polarization analysis"""
+class EISTab:
+    """Tab for Electrochemical Impedance Spectroscopy analysis"""
     
-    def setup(self, parent, db):
+    def setup(self, parent, db=None):
         self.parent = parent
         self.db = db
-        self.engine = TafelEngine()
-        self.current_data = None
-        self.current_id = None
+        self.engine = EISEngine()
+        self.eis_data = None
+        self.fit_result = None
         
         ml = QVBoxLayout(parent)
         ml.setSpacing(12)
@@ -34,92 +31,94 @@ class TafelTab:
         
         # Header
         header = QHBoxLayout()
-        title = QLabel("Tafel Analysis")
+        title = QLabel("EIS Analysis")
         title.setStyleSheet("font-size: 22px; font-weight: 700; color: #1E293B;")
         header.addWidget(title)
         header.addStretch()
         
-        self.tafel_status = QLabel("No data")
-        self.tafel_status.setStyleSheet(
-            "background: #FEF3C7; color: #92400E; padding: 6px 16px; "
-            "border-radius: 12px; font-weight: 600; font-size: 11px;"
-        )
-        header.addWidget(self.tafel_status)
-        
-        load_btn = QPushButton("📂 Load Data")
-        load_btn.clicked.connect(self._load_data)
-        header.addWidget(load_btn)
+        badge = QLabel("Impedance Spectroscopy")
+        badge.setStyleSheet("background: #DBEAFE; color: #2563EB; padding: 6px 16px; "
+                           "border-radius: 20px; font-weight: 600; font-size: 11px;")
+        header.addWidget(badge)
         ml.addLayout(header)
         
-        # Content
+        desc = QLabel("Equivalent Circuit Fitting with Weighted CNLS and CPE Support")
+        desc.setStyleSheet("color: #64748B; font-size: 13px; margin-bottom: 4px;")
+        ml.addWidget(desc)
+        
         content = QHBoxLayout()
         content.setSpacing(12)
         
-        # Left panel
+        # ===== LEFT PANEL =====
         left = QVBoxLayout()
         left.setSpacing(8)
         
-        # Unit selector
-        unit_card = QGroupBox("Current Units")
-        ul = QHBoxLayout()
-        self.tafel_unit = QComboBox()
-        self.tafel_unit.addItems(["Auto-detect", "Amperes (A)", "milliamperes (mA)", "microamperes (μA)"])
-        ul.addWidget(self.tafel_unit)
-        unit_card.setLayout(ul)
-        left.addWidget(unit_card)
+        # Circuit Model Selection
+        circuit_card = QGroupBox("Equivalent Circuit Model")
+        cl = QVBoxLayout()
+        cl.setSpacing(8)
         
-        # Area
-        area_card = QGroupBox("Electrode Area")
-        al = QHBoxLayout()
-        al.addWidget(QLabel("Area:"))
-        self.area_spin = QDoubleSpinBox()
-        self.area_spin.setRange(0.001, 1000)
-        self.area_spin.setValue(1.0)
-        self.area_spin.setSuffix(" cm²")
-        al.addWidget(self.area_spin, 1)
-        area_card.setLayout(al)
-        left.addWidget(area_card)
+        self.circuit_combo = QComboBox()
+        self.circuit_combo.addItems([
+            "R(RC) - Randles",
+            "R(RQ) - Randles CPE (depressed)",
+            "R(RW)C - Randles+Warburg",
+            "R(RW)Q - Randles+Warburg CPE"
+        ])
+        cl.addWidget(QLabel("Circuit:"))
+        cl.addWidget(self.circuit_combo)
         
-        # Results table
-        res_card = QGroupBox("Results")
+        # CPE info label
+        self.cpe_info = QLabel("CPE: Z = 1/(Q·(jω)^α), α<1 for real electrodes")
+        self.cpe_info.setStyleSheet("color: #64748B; font-size: 10px; font-style: italic;")
+        self.cpe_info.setWordWrap(True)
+        cl.addWidget(self.cpe_info)
+        
+        circuit_card.setLayout(cl)
+        left.addWidget(circuit_card)
+        
+        # Data Source
+        data_card = QGroupBox("Data Source")
+        dl = QVBoxLayout()
+        dl.setSpacing(6)
+        
+        gen_btn = QPushButton("🧪 Generate Synthetic Data")
+        gen_btn.clicked.connect(self._generate_test_data)
+        dl.addWidget(gen_btn)
+        
+        self.data_status = QLabel("No data loaded")
+        self.data_status.setStyleSheet("color: #94A3B8; font-size: 11px;")
+        dl.addWidget(self.data_status)
+        
+        data_card.setLayout(dl)
+        left.addWidget(data_card)
+        
+        # Fitting Results
+        result_card = QGroupBox("Fitted Parameters")
         rl = QVBoxLayout()
-        self.results_table = QTableWidget()
-        self.results_table.setColumnCount(2)
-        self.results_table.setRowCount(6)
-        self.results_table.setHorizontalHeaderLabels(["Parameter", "Value"])
-        self.results_table.horizontalHeader().setStretchLastSection(True)
-        self.results_table.verticalHeader().setVisible(False)
-        self.results_table.setEditTriggers(QAbstractItemView.EditTrigger.NoEditTriggers)
-        self.results_table.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
+        rl.setSpacing(4)
         
-        params = ["Ecorr (V)", "Icorr (μA/cm²)", "CR (mm/yr)", "βa (mV/dec)", "βc (mV/dec)", "R²"]
-        for i, p in enumerate(params):
-            self.results_table.setItem(i, 0, QTableWidgetItem(p))
-            item = QTableWidgetItem("—")
-            item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-            self.results_table.setItem(i, 1, item)
+        self.result_label = QLabel("Run fit to see results")
+        self.result_label.setStyleSheet("font-size: 12px; padding: 8px; color: #64748B; "
+                                        "background: #F8FAFC; border-radius: 6px;")
+        self.result_label.setWordWrap(True)
+        self.result_label.setMinimumHeight(120)
+        rl.addWidget(self.result_label)
         
-        self.results_table.resizeColumnsToContents()
-        rl.addWidget(self.results_table)
-        res_card.setLayout(rl)
-        left.addWidget(res_card)
+        # KK validation result
+        self.kk_label = QLabel("")
+        self.kk_label.setStyleSheet("font-size: 11px; padding: 4px 8px;")
+        rl.addWidget(self.kk_label)
         
-        # Buttons
-        self.run_btn = QPushButton("⚡ Run Tafel Analysis")
-        self.run_btn.setObjectName("primaryBtn")
-        self.run_btn.clicked.connect(self._run_analysis)
-        left.addWidget(self.run_btn)
+        result_card.setLayout(rl)
+        left.addWidget(result_card)
         
-        export_row = QHBoxLayout()
-        self.export_png = QPushButton("Save PNG")
-        self.export_png.setEnabled(False)
-        self.export_png.clicked.connect(lambda: self._export_plot('png'))
-        export_row.addWidget(self.export_png)
-        self.export_pdf = QPushButton("Save PDF")
-        self.export_pdf.setEnabled(False)
-        self.export_pdf.clicked.connect(lambda: self._export_plot('pdf'))
-        export_row.addWidget(self.export_pdf)
-        left.addLayout(export_row)
+        # Fit Button
+        fit_btn = QPushButton("⚡ Run Weighted CNLS Fit")
+        fit_btn.setObjectName("primaryBtn")
+        fit_btn.clicked.connect(self._run_fit)
+        left.addWidget(fit_btn)
+        
         left.addStretch()
         
         left_widget = QWidget()
@@ -127,12 +126,12 @@ class TafelTab:
         left_widget.setFixedWidth(300)
         content.addWidget(left_widget)
         
-        # Right panel - Graph
+        # ===== RIGHT PANEL - Dual Plots =====
         plot_layout = QVBoxLayout()
         plot_layout.setContentsMargins(0, 0, 0, 0)
         plot_layout.setSpacing(0)
         
-        self.figure = Figure(figsize=(8, 6), dpi=100)
+        self.figure = Figure(figsize=(10, 8), dpi=100)
         self.figure.patch.set_facecolor('white')
         self.canvas = FigureCanvas(self.figure)
         self.canvas.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
@@ -144,106 +143,184 @@ class TafelTab:
         
         ml.addLayout(content, 1)
     
-    def _load_data(self):
-        try:
-            latest = self.db.get_latest()
-            if not latest:
-                QMessageBox.warning(self.parent, "No Data", "Import data first")
-                return
-            
-            self.current_id = latest[0]
-            self.current_data = pd.read_csv(StringIO(latest[4]))
-            self.tafel_status.setText(f"✓ {latest[1]}")
-            self.tafel_status.setStyleSheet(
-                "background: #D1FAE5; color: #065F46; padding: 6px 16px; "
-                "border-radius: 12px; font-weight: 600; font-size: 11px;"
-            )
-        except Exception as e:
-            QMessageBox.critical(self.parent, "Error", str(e))
+    def _generate_test_data(self):
+        """Generate synthetic EIS data for testing."""
+        circuit_text = self.circuit_combo.currentText()
+        
+        if 'Warburg' in circuit_text:
+            circuit = 'warburg'
+        else:
+            circuit = 'randles'
+        
+        depressed = 'CPE' in circuit_text or 'depressed' in circuit_text
+        
+        self.eis_data = self.engine.generate_test_data(
+            circuit=circuit,
+            depressed=depressed,
+            noise_level=0.015
+        )
+        self.fit_result = None
+        
+        n_points = len(self.eis_data['freq'])
+        self.data_status.setText(f"✓ {n_points} points | 100 kHz - 0.01 Hz")
+        self.data_status.setStyleSheet("color: #10B981; font-size: 11px;")
+        
+        self.result_label.setText("Data generated. Click 'Run Fit' to analyze.")
+        self.result_label.setStyleSheet("font-size: 12px; padding: 8px; color: #F59E0B; "
+                                        "background: #FEF3C7; border-radius: 6px;")
+        self.kk_label.setText("")
+        
+        self._plot_data()
     
-    def _run_analysis(self):
-        if self.current_data is None:
-            QMessageBox.warning(self.parent, "No Data", "Load data first")
+    def _run_fit(self):
+        """Run weighted CNLS fitting."""
+        if self.eis_data is None:
+            self.result_label.setText("⚠ Generate or load data first!")
+            self.result_label.setStyleSheet("font-size: 12px; padding: 8px; color: #EF4444; "
+                                            "background: #FEE2E2; border-radius: 6px;")
             return
         
-        try:
-            pcol, ccol = None, None
-            for col in self.current_data.columns:
-                cl = col.lower()
-                if 'potential' in cl or 'volt' in cl: pcol = col
-                if 'current' in cl or 'amp' in cl: ccol = col
-            
-            if not pcol or not ccol:
-                num_cols = list(self.current_data.select_dtypes(include=[np.number]).columns)
-                if len(num_cols) >= 2:
-                    pcol, ccol = num_cols[0], num_cols[1]
-                else:
-                    QMessageBox.critical(self.parent, "Error", "Cannot identify columns")
-                    return
-            
-            potential = self.current_data[pcol].values
-            current = self.current_data[ccol].values
-            
-            unit_choice = self.tafel_unit.currentText()
-            auto_detect = True
-            if "milliamperes" in unit_choice:
-                current = current * 0.001; auto_detect = False
-            elif "microamperes" in unit_choice:
-                current = current * 1e-6; auto_detect = False
-            elif "Amperes" in unit_choice and "micro" not in unit_choice and "milli" not in unit_choice:
-                auto_detect = False
-            
-            results = self.engine.analyze(potential, current, self.area_spin.value(), auto_detect_units=auto_detect)
-            
-            if not results:
-                QMessageBox.warning(self.parent, "Failed", "Analysis failed")
-                return
-            
-            # Update table
-            values = [
-                f"{results['ecorr']:.4f}",
-                f"{results['icorr']:.2f}",
-                f"{results['cr']:.4f}",
-                f"{results['beta_a']:.1f}",
-                f"{results['beta_c']:.1f}",
-                f"{results['r2']:.4f}"
-            ]
-            
-            for i, val in enumerate(values):
-                item = QTableWidgetItem(val)
-                item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
-                item.setFont(QFont("", -1, QFont.Weight.Bold))
-                self.results_table.setItem(i, 1, item)
-            
-            self.results_table.resizeColumnsToContents()
-            
-            # Plot
-            self.figure.clear()
-            ax = self.figure.add_subplot(111)
-            ax.scatter(results['p'], results['log_i'], alpha=0.7, s=40, color=Theme.PRIMARY, label='Data', zorder=3)
-            
-            pr = np.linspace(results['p'].min(), results['p'].max(), 200)
-            ax.plot(pr, results['slope_a']*pr + results['intercept_a'], '-', color=Theme.ERROR, linewidth=2, label=f"βa={results['beta_a']:.0f}")
-            ax.plot(pr, results['slope_c']*pr + results['intercept_c'], '-', color=Theme.SECONDARY, linewidth=2, label=f"βc={results['beta_c']:.0f}")
-            ax.axvline(results['ecorr'], color=Theme.WARNING, linestyle='--', linewidth=2, label=f"Ecorr={results['ecorr']:.3f}V")
-            
-            ax.set_xlabel('Potential (V)', fontweight='bold')
-            ax.set_ylabel('log|Current| (A)', fontweight='bold')
-            ax.set_title('Tafel Analysis', fontweight='bold')
-            ax.legend(); ax.grid(True, alpha=0.3); ax.set_facecolor('#FAFBFC')
-            self.figure.tight_layout()
-            self.canvas.draw()
-            
-            self.export_png.setEnabled(True); self.export_pdf.setEnabled(True)
-            
-            if self.current_id:
-                self.db.update(self.current_id, results['ecorr'], results['icorr'], results['cr'], results['beta_a'], results['beta_c'])
-            
-        except Exception as e:
-            QMessageBox.critical(self.parent, "Error", str(e))
+        freq = self.eis_data['freq']
+        Z_real = self.eis_data['Z_real']
+        Z_imag = self.eis_data['Z_imag']
+        
+        circuit_text = self.circuit_combo.currentText()
+        use_cpe = 'CPE' in circuit_text or 'depressed' in circuit_text
+        
+        # Run appropriate fit
+        if 'Warburg' in circuit_text:
+            result = self.engine.fit_warburg(freq, Z_real, Z_imag, use_cpe=use_cpe)
+        else:
+            result = self.engine.fit_randles(freq, Z_real, Z_imag, use_cpe=use_cpe)
+        
+        if 'error' in result:
+            self.result_label.setText(f"❌ {result['error']}")
+            self.result_label.setStyleSheet("font-size: 12px; padding: 8px; color: #EF4444; "
+                                            "background: #FEE2E2; border-radius: 6px;")
+            return
+        
+        self.fit_result = result
+        
+        # Build result text
+        lines = [f"Circuit: {result['circuit']}", ""]
+        lines.append(f"Rₛ  = {result['Rs']:.1f} Ω")
+        lines.append(f"Rct = {result['Rct']:.1f} Ω")
+        
+        if 'Cdl' in result:
+            lines.append(f"Cdl = {result['Cdl']:.2e} F")
+        if 'Q' in result:
+            lines.append(f"Q   = {result['Q']:.2e} F·s^(α-1)")
+            lines.append(f"α   = {result['alpha']:.4f}")
+        if 'W' in result:
+            lines.append(f"W   = {result['W']:.1f} Ω·s⁻⁰·⁵")
+        
+        lines.append("")
+        lines.append(f"R²  = {result['r_squared']:.4f}")
+        lines.append(f"χ²  = {result['chi_squared']:.2f}")
+        
+        self.result_label.setText("\n".join(lines))
+        self.result_label.setStyleSheet("font-size: 12px; padding: 8px; color: #10B981; "
+                                        "background: #D1FAE5; border-radius: 6px; font-weight: bold;")
+        
+        # Run KK validation
+        kk = self.engine.linear_kramers_kronig(freq, Z_real, Z_imag)
+        if kk['kk_score'] > 0.8:
+            kk_color = '#10B981'
+        elif kk['kk_score'] > 0.5:
+            kk_color = '#F59E0B'
+        else:
+            kk_color = '#EF4444'
+        
+        self.kk_label.setText(f"KK Score: {kk['kk_score']:.3f} ({kk['data_quality']}) | "
+                             f"Phase valid: {'✓' if kk['valid_phase'] else '✗'}")
+        self.kk_label.setStyleSheet(f"font-size: 11px; padding: 4px 8px; color: {kk_color};")
+        
+        # Update plot with fit
+        self._plot_data()
     
-    def _export_plot(self, fmt):
-        path, _ = QFileDialog.getSaveFileName(self.parent, f"Save {fmt.upper()}", f"tafel.{fmt}", f"{fmt.upper()} (*.{fmt})")
-        if path:
-            self.figure.savefig(path, dpi=300, bbox_inches='tight')
-            QMessageBox.information(self.parent, "Success", f"Saved to {path}")
+    def _plot_data(self):
+        """Plot Nyquist and Bode plots with optional fit overlay."""
+        self.figure.clear()
+        
+        # ---- Nyquist Plot ----
+        ax1 = self.figure.add_subplot(221)
+        
+        ax1.scatter(self.eis_data['Z_real'], self.eis_data['Z_imag'],
+                   s=25, color=Theme.PRIMARY, alpha=0.7, label='Data', zorder=3,
+                   edgecolors='white', linewidth=0.5)
+        
+        if self.fit_result and 'Z_fitted' in self.fit_result:
+            Z_fit = self.fit_result['Z_fitted']
+            ax1.plot(Z_fit.real, Z_fit.imag, '-', color=Theme.ERROR,
+                    linewidth=2, label='Fit', zorder=2)
+        
+        ax1.set_xlabel("Z' (Ω)", fontweight='bold')
+        ax1.set_ylabel("-Z'' (Ω)", fontweight='bold')
+        ax1.set_title('Nyquist Plot', fontweight='bold', fontsize=11)
+        ax1.legend(fontsize=9)
+        ax1.grid(True, alpha=0.3, linestyle='--')
+        ax1.set_facecolor('#FAFBFC')
+        ax1.set_aspect('equal')
+        
+        # ---- Bode Magnitude ----
+        ax2 = self.figure.add_subplot(222)
+        freq = self.eis_data['freq']
+        Z_mod = np.sqrt(self.eis_data['Z_real']**2 + self.eis_data['Z_imag']**2)
+        
+        ax2.loglog(freq, Z_mod, 'o', color=Theme.PRIMARY, markersize=4, alpha=0.7, label='|Z|')
+        
+        if self.fit_result and 'Z_fitted' in self.fit_result:
+            Z_fit = self.fit_result['Z_fitted']
+            Z_mod_fit = np.sqrt(Z_fit.real**2 + Z_fit.imag**2)
+            ax2.loglog(freq, Z_mod_fit, '-', color=Theme.ERROR, linewidth=2, label='Fit')
+        
+        ax2.set_xlabel('Frequency (Hz)', fontweight='bold')
+        ax2.set_ylabel('|Z| (Ω)', fontweight='bold')
+        ax2.set_title('Bode Magnitude', fontweight='bold', fontsize=11)
+        ax2.legend(fontsize=9)
+        ax2.grid(True, alpha=0.3, linestyle='--')
+        ax2.set_facecolor('#FAFBFC')
+        
+        # ---- Bode Phase ----
+        ax3 = self.figure.add_subplot(223)
+        phase_data = np.angle(self.eis_data['Z_real'] + 1j * self.eis_data['Z_imag'], deg=True)
+        
+        ax3.semilogx(freq, phase_data, 'o', color=Theme.PRIMARY, markersize=4, alpha=0.7, label='Data')
+        
+        if self.fit_result and 'Z_fitted' in self.fit_result:
+            Z_fit = self.fit_result['Z_fitted']
+            phase_fit = np.angle(Z_fit, deg=True)
+            ax3.semilogx(freq, phase_fit, '-', color=Theme.ERROR, linewidth=2, label='Fit')
+        
+        ax3.set_xlabel('Frequency (Hz)', fontweight='bold')
+        ax3.set_ylabel('Phase (°)', fontweight='bold')
+        ax3.set_title('Bode Phase', fontweight='bold', fontsize=11)
+        ax3.legend(fontsize=9)
+        ax3.grid(True, alpha=0.3, linestyle='--')
+        ax3.set_facecolor('#FAFBFC')
+        ax3.set_ylim(-90, 10)
+        
+        # ---- Residuals Plot ----
+        ax4 = self.figure.add_subplot(224)
+        
+        if self.fit_result and 'Z_fitted' in self.fit_result:
+            Z_fit = self.fit_result['Z_fitted']
+            resid_real = (self.eis_data['Z_real'] - Z_fit.real) / Z_mod * 100
+            resid_imag = (self.eis_data['Z_imag'] - Z_fit.imag) / Z_mod * 100
+            
+            ax4.semilogx(freq, resid_real, 'o-', color=Theme.PRIMARY, markersize=3, label="Z' resid")
+            ax4.semilogx(freq, resid_imag, 's-', color=Theme.ERROR, markersize=3, label="Z'' resid")
+            ax4.axhline(y=0, color='black', linewidth=0.5)
+            ax4.set_ylabel('Residual (%)', fontweight='bold')
+        else:
+            ax4.text(0.5, 0.5, 'Run fit to see residuals', ha='center', va='center',
+                    transform=ax4.transAxes, color='#94A3B8')
+        
+        ax4.set_xlabel('Frequency (Hz)', fontweight='bold')
+        ax4.set_title('Fit Residuals', fontweight='bold', fontsize=11)
+        ax4.legend(fontsize=9)
+        ax4.grid(True, alpha=0.3, linestyle='--')
+        ax4.set_facecolor('#FAFBFC')
+        
+        self.figure.tight_layout(pad=2)
+        self.canvas.draw()
