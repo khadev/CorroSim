@@ -155,7 +155,7 @@ Expected output:
 
 ## 🏗️ Project Structure
 
-
+```
 corrosim/
 ├── corrosim/                    # Main package
 │   ├── __init__.py              # Package initialization
@@ -185,7 +185,7 @@ corrosim/
 ├── README.md                    # Documentation
 ├── LICENSE                      # MIT License
 └── .gitignore                   # Git ignore rules
-
+```
 
 
 ## 🔬 Algorithm Verification
