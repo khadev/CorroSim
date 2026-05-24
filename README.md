@@ -157,30 +157,35 @@ Expected output:
 
 
 corrosim/
-├── corrosim/                  # Main package
+├── corrosim/                    # Main package
+│   ├── __init__.py              # Package initialization
+│   ├── main.py                  # Application entry point
+│   ├── app.py                   # Main window controller
+│   ├── theme.py                 # UI styling and theme
+│   ├── database.py              # SQLite database operations
+│   ├── tafel_engine.py          # Tafel analysis algorithms
+│   ├── splash_screen.py         # Splash screen widget
+│   ├── tabs/                    # Tab modules
+│   │   ├── __init__.py
+│   │   ├── import_tab.py        # Data import interface
+│   │   ├── tafel_tab.py         # Tafel analysis interface
+│   │   ├── prediction_tab.py    # Lifetime prediction
+│   │   └── comparison_tab.py    # Sample comparison
+│   └── utils/                   # Utility modules
+│       ├── __init__.py
+│       └── constants.py         # Physical constants
+├── tests/                       # Test suite
 │   ├── __init__.py
-│   ├── main.py                # Entry point
-│   ├── app.py                 # Main window
-│   ├── theme.py               # UI styling
-│   ├── database.py            # SQLite database
-│   ├── tafel_engine.py        # Analysis algorithms
-│   ├── splash_screen.py       # Splash screen
-│   ├── tabs/                  # Tab modules
-│   │   ├── import_tab.py
-│   │   ├── tafel_tab.py
-│   │   ├── prediction_tab.py
-│   │   └── comparison_tab.py
-│   └── utils/
-│       └── constants.py       # Physical constants
-├── tests/
-│   └── test_tafel.py          # Validation tests
-├── screenshots/               # Application screenshots
-├── requirements.txt
-├── setup.py
-├── run.py
-├── README.md
-├── LICENSE
-└── .gitignore
+│   └── test_tafel.py            # Tafel engine validation
+├── screenshots/                 # Application screenshots
+├── dist/                        # Built packages (PyPI)
+├── requirements.txt             # Python dependencies
+├── setup.py                     # Package setup script
+├── run.py                       # Quick launcher
+├── README.md                    # Documentation
+├── LICENSE                      # MIT License
+└── .gitignore                   # Git ignore rules
+
 
 
 ## 🔬 Algorithm Verification
