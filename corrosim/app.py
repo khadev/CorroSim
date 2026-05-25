@@ -9,6 +9,7 @@ from .database import Database
 from .tabs import ImportTab, TafelTab, PredictionTab, ComparisonTab
 from .tabs.galvanic_tab import GalvanicTab
 from .tabs.eis_tab import EISTab
+from .tabs.pitting_tab import PittingTab
 
 
 class MainWindow(QMainWindow):
@@ -63,6 +64,7 @@ class MainWindow(QMainWindow):
             ("📊", "Compare", 3),
             ("🔗", "Galvanic", 4),
             ("🔬", "EIS", 5),
+            ("🕳️", "Pitting", 6),
         ]
         
         for icon, text, idx in tabs:
@@ -93,6 +95,7 @@ class MainWindow(QMainWindow):
         self.comparison_widget = QWidget()
         self.galvanic_widget = QWidget()
         self.eis_widget = QWidget()
+        self.pitting_widget = QWidget()
         
         self.tabs.addTab(self.import_widget, "Import")
         self.tabs.addTab(self.tafel_widget, "Tafel")
@@ -100,6 +103,7 @@ class MainWindow(QMainWindow):
         self.tabs.addTab(self.comparison_widget, "Compare")
         self.tabs.addTab(self.galvanic_widget, "Galvanic")
         self.tabs.addTab(self.eis_widget, "EIS")
+        self.tabs.addTab(self.pitting_widget, "Pitting")
         
         self.import_tab = ImportTab()
         self.import_tab.setup(parent=self.import_widget, db=self.db,
@@ -120,6 +124,9 @@ class MainWindow(QMainWindow):
         
         self.eis_tab = EISTab()
         self.eis_tab.setup(parent=self.eis_widget, db=self.db)
+        
+        self.pitting_tab = PittingTab()
+        self.pitting_tab.setup(parent=self.pitting_widget, db=self.db)
     
     def switch_tab(self, index):
         self.tabs.setCurrentIndex(index)
@@ -147,14 +154,15 @@ class MainWindow(QMainWindow):
     def _show_about(self):
         QMessageBox.about(self, "About CorroSim",
             "<h3>⚡ CorroSim Analysis Platform</h3>"
-            "<p>Version 1.2.0</p>"
-            "<p>Professional Corrosion Analysis Tool</p>"
+            "<p>Version 1.3.0</p>"
+            "<p>Professional Corrosion Analysis Suite</p>"
             "<hr>"
             "<p><b>Modules:</b></p>"
             "<ul>"
             "<li>Tafel Polarization Analysis</li>"
             "<li>Galvanic Corrosion Simulator</li>"
             "<li>EIS Impedance Spectroscopy</li>"
+            "<li>Pitting Corrosion Analyzer</li>"
             "<li>Lifetime Prediction</li>"
             "<li>Multi-Sample Comparison</li>"
             "</ul>"
