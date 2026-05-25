@@ -12,6 +12,7 @@ from .tabs.eis_tab import EISTab
 from .tabs.pitting_tab import PittingTab
 from .tabs.inhibitor_tab import InhibitorTab
 from matplotlib.figure import Figure
+from .utils.translations import Translator
 
 
 class MainWindow(QMainWindow):
@@ -19,11 +20,13 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
+        self.tr = Translator.get()
         self.setWindowTitle("CorroSim Analysis Platform")
         self.setMinimumSize(1200, 800)
         self.resize(1400, 900)
         self.db = Database()
         self.nav_buttons = []
+        self.sidebar_buttons = []
         self.dark_mode = False
         self.setStyleSheet(GLOBAL_STYLE)
         self._setup_ui()
@@ -50,32 +53,33 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout(self.sidebar)
         layout.setContentsMargins(12, 20, 12, 20)
         layout.setSpacing(6)
-        logo = QLabel("⚡ CorroSim")
-        logo.setStyleSheet("font-size: 18px; font-weight: 700; color: white; background: transparent;")
-        layout.addWidget(logo)
+        self.logo_label = QLabel("⚡ CorroSim")
+        self.logo_label.setStyleSheet("font-size: 18px; font-weight: 700; color: white; background: transparent;")
+        layout.addWidget(self.logo_label)
         layout.addSpacing(20)
-        nav_label = QLabel("NAVIGATION")
-        nav_label.setStyleSheet("color: #94A3B8; font-size: 10px; font-weight: 600; background: transparent;")
-        layout.addWidget(nav_label)
+        self.nav_label = QLabel("NAVIGATION")
+        self.nav_label.setStyleSheet("color: #94A3B8; font-size: 10px; font-weight: 600; background: transparent;")
+        layout.addWidget(self.nav_label)
         tabs = [
-            ("📁", "Import", 0), ("⚡", "Tafel", 1), ("🔮", "Prediction", 2),
-            ("📊", "Compare", 3), ("🔗", "Galvanic", 4), ("🔬", "EIS", 5),
-            ("🕳️", "Pitting", 6), ("🧪", "Inhibitor", 7),
+            ("📁", "tab.import", 0), ("⚡", "tab.tafel", 1), ("🔮", "tab.prediction", 2),
+            ("📊", "tab.compare", 3), ("🔗", "tab.galvanic", 4), ("🔬", "tab.eis", 5),
+            ("🕳️", "tab.pitting", 6), ("🧪", "tab.inhibitor", 7),
         ]
-        for icon, text, idx in tabs:
-            btn = QPushButton(f"  {icon}  {text}")
+        for icon, key, idx in tabs:
+            btn = QPushButton(f"  {icon}  {self.tr.tr(key)}")
             btn.setProperty("active", "false")
             btn.clicked.connect(lambda checked, i=idx: self.switch_tab(i))
             self.nav_buttons.append(btn)
+            self.sidebar_buttons.append((btn, key))
             layout.addWidget(btn)
         layout.addStretch()
         sep = QFrame()
         sep.setFrameShape(QFrame.Shape.HLine)
         sep.setStyleSheet("background-color: #334155; max-height: 1px;")
         layout.addWidget(sep)
-        status = QLabel("● Database Connected")
-        status.setStyleSheet("color: #10B981; font-size: 10px; background: transparent; padding: 8px;")
-        layout.addWidget(status)
+        self.db_status = QLabel("● Database Connected")
+        self.db_status.setStyleSheet("color: #10B981; font-size: 10px; background: transparent; padding: 8px;")
+        layout.addWidget(self.db_status)
 
     def _create_tabs(self):
         self.tabs = QTabWidget()
@@ -139,10 +143,26 @@ class MainWindow(QMainWindow):
         theme_action.setShortcut("Ctrl+T")
         theme_action.triggered.connect(self._toggle_theme)
         file_menu.addAction(theme_action)
+        lang_menu = menubar.addMenu("Language")
+        en_action = QAction("English", self)
+        en_action.triggered.connect(lambda: self._switch_lang("en"))
+        lang_menu.addAction(en_action)
+        fr_action = QAction("Français", self)
+        fr_action.triggered.connect(lambda: self._switch_lang("fr"))
+        lang_menu.addAction(fr_action)
         help_menu = menubar.addMenu("Help")
         about_action = QAction("About", self)
         about_action.triggered.connect(self._show_about)
         help_menu.addAction(about_action)
+
+    def _switch_lang(self, lang):
+        self.tr.set_language(lang)
+        self.nav_label.setText(self.tr.tr("sidebar.navigation"))
+        for btn, key in self.sidebar_buttons:
+            icon = btn.text().strip()[:2]
+            btn.setText(f"  {icon}  {self.tr.tr(key)}")
+        self.db_status.setText(f"● {self.tr.tr('sidebar.database')}")
+        self.statusBar().showMessage(f"Language: {'English' if lang == 'en' else 'Français'}")
 
     def _export_pdf_report(self):
         from matplotlib.backends.backend_pdf import PdfPages

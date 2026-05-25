@@ -151,7 +151,7 @@ openpyxl>=3.1.0
 
 ```
 python tests/test_tafel.py
-```v
+```
 
 Expected output:
 
@@ -238,20 +238,20 @@ corrosim/
 │   │   └── inhibitor_engine.py  # Inhibitor efficiency + adsorption isotherms
 │   ├── tabs/                    # UI Tab modules (MVC pattern)
 │   │   ├── __init__.py
-│   │   ├── import_tab.py        # 📁 Data import (Excel/CSV)
-│   │   ├── tafel_tab.py         # ⚡ Tafel analysis interface
-│   │   ├── prediction_tab.py    # 🔮 Lifetime prediction (3 models)
-│   │   ├── comparison_tab.py    # 📊 Multi-sample comparison + export
-│   │   ├── galvanic_tab.py      # 🔗 Galvanic simulator (14 metals)
-│   │   ├── eis_tab.py           # 🔬 EIS spectroscopy (4 circuits)
-│   │   ├── pitting_tab.py       # 🕳️ Pitting analyzer (cyclic polarization)
-│   │   └── inhibitor_tab.py     # 🧪 Inhibitor efficiency + synergy
+│   │   ├── import_tab.py        # Data import (Excel/CSV)
+│   │   ├── tafel_tab.py         # Tafel analysis interface
+│   │   ├── prediction_tab.py    # Lifetime prediction (3 models)
+│   │   ├── comparison_tab.py    # Multi-sample comparison + export
+│   │   ├── galvanic_tab.py      # Galvanic simulator (14 metals)
+│   │   ├── eis_tab.py           # EIS spectroscopy (4 circuits)
+│   │   ├── pitting_tab.py       # Pitting analyzer (cyclic polarization)
+│   │   └── inhibitor_tab.py     # Inhibitor efficiency + synergy
 │   └── utils/                   # Utility modules
 │       ├── __init__.py
 │       └── constants.py         # Physical/electrochemical constants
 ├── tests/                       # Test suite
 │   ├── __init__.py
-│   └── test_tafel.py            # Tafel engine validation (R² > 0.999)
+│   └── test_tafel.py            # Tafel engine validation (R^2 > 0.999)
 ├── screenshots/                 # Application screenshots
 ├── dist/                        # Built packages for PyPI
 ├── requirements.txt             # Python dependencies
