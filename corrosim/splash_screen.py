@@ -14,7 +14,7 @@ class SplashScreen(QSplashScreen):
     HEIGHT = 400
     BRAND_NAME = "CorroSim"
     TAGLINE = "Advanced Corrosion Analysis Platform"
-    VERSION = "Version 1.0.0"
+    VERSION = "Version 1.5.0"
     COPYRIGHT = "© 2026 CorroSim • NanoStack-Lab"
     WEBSITE = "github.com/khadev/corrosim"
     
