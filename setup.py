@@ -18,8 +18,8 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="corrosim",
-    version="1.1.0",
-    description="Professional Corrosion Analysis Platform - Tafel, Galvanic, Prediction & Comparison",
+    version="1.3.0",
+    description="Professional Corrosion Analysis Platform - Tafel, Galvanic, EIS, Pitting, Prediction & Comparison",
     author="oukil khaled ibn El-walid",
     author_email="oukil.khaled@gmail.com",
     long_description=long_description,

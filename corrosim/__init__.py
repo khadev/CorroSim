@@ -8,8 +8,8 @@ A comprehensive tool for electrochemical corrosion analysis including:
 - Data import/export
 """
 
-__version__ = "1.1.0"
-__author__ = "Your Name"
+version="1.3.0",
+__author__ = "Oukil khaled ibn El-walid"
 __description__ = "Professional Corrosion Analysis Platform"
 
 from .tafel_engine import TafelEngine
