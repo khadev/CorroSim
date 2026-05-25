@@ -40,15 +40,24 @@ class PittingTab:
         content = QHBoxLayout()
         content.setSpacing(12)
         
-        # LEFT PANEL
+                # LEFT PANEL
         left = QVBoxLayout()
         left.setSpacing(8)
         
         data_card = QGroupBox("Data Source")
         dl = QVBoxLayout()
+        dl.setSpacing(4)
+        
         gen_btn = QPushButton("Generate Test Data")
+        gen_btn.setMinimumHeight(30)
         gen_btn.clicked.connect(self._generate_test_data)
         dl.addWidget(gen_btn)
+        
+        import_btn = QPushButton("Import CSV Data")
+        import_btn.setMinimumHeight(30)
+        import_btn.clicked.connect(self._import_real_data)
+        dl.addWidget(import_btn)
+        
         self.data_status = QLabel("No data loaded")
         self.data_status.setStyleSheet("color: #94A3B8; font-size: 11px;")
         dl.addWidget(self.data_status)
@@ -156,3 +165,27 @@ class PittingTab:
         
         self.figure.tight_layout()
         self.canvas.draw()
+    def _import_real_data(self):
+        import pandas as pd
+        path, _ = QFileDialog.getOpenFileName(self.parent, "Open Pitting Data", "", "CSV Files (*.csv);;All Files (*)")
+        if not path:
+            return
+        try:
+            df = pd.read_csv(path)
+            cols = [c.lower().strip() for c in df.columns]
+            pc = cc = None
+            for i, c in enumerate(cols):
+                if 'potential' in c or 'volt' in c: pc = df.columns[i]
+                elif 'current' in c or 'amp' in c: cc = df.columns[i]
+            if pc is None or cc is None:
+                nc = df.select_dtypes(include=[np.number]).columns
+                if len(nc) >= 2: pc, cc = nc[0], nc[1]
+                else: QMessageBox.warning(self.parent, "Error", "Cannot identify columns"); return
+            self.test_data = {'potential': df[pc].values.astype(float), 'current': np.abs(df[cc].values.astype(float)), 'pit_depths': None}
+            self.analysis_result = None
+            self.data_status.setText(f"Loaded: {len(self.test_data['potential'])} points")
+            self.data_status.setStyleSheet("color: #10B981; font-size: 11px;")
+            self.result_label.setText("Data loaded. Click 'Analyze Pitting'.")
+            self._plot_cyclic()
+        except Exception as e:
+            QMessageBox.critical(self.parent, "Import Error", str(e))
