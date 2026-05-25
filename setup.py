@@ -18,7 +18,8 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="corrosim",
-    version="1.5.0",
+    version="1.5.1",
+    license="MIT",
     description="A comprehensive desktop application with 8 professional modules: Tafel, Galvanic, EIS, Pitting, Inhibitor, Prediction, Comparison, and Data Import.",
     author="oukil khaled ibn El-walid",
     author_email="oukil.khaled@gmail.com",
