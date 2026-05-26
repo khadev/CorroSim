@@ -149,8 +149,7 @@ class EISTab:
     def _generate_test_data(self):
         circuit_text = self.circuit_combo.currentText()
         circuit = 'warburg' if 'Warburg' in circuit_text else 'randles'
-        depressed = 'CPE' in circuit_text
-        self.eis_data = self.engine.generate_test_data(circuit=circuit, depressed=depressed, noise_level=0.015)
+        self.eis_data = self.engine.generate_test_data(circuit=circuit, noise_level=0.005)
         self.fit_result = None
         n = len(self.eis_data['freq'])
         self.data_status.setText(f"{n} points | 100 kHz - 0.01 Hz")
