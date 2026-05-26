@@ -12,7 +12,7 @@ A comprehensive tool for electrochemical corrosion analysis including:
 - Data import/export
 """
 
-__version__ = "1.5.1"
+__version__ = "1.5.2"
 __author__ = "Oukil Khaled Ibn El-Walid"
 __description__ = "Professional Corrosion Analysis Platform"
 

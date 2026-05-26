@@ -3,7 +3,6 @@
 
 from setuptools import setup, find_packages
 
-# Read requirements directly instead of from file
 requirements = [
     "PyQt6>=6.5.0",
     "matplotlib>=3.7.0",
@@ -18,10 +17,11 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="corrosim",
-    version="1.5.1",
+    version="1.5.2",
     license="MIT",
-    description="A comprehensive desktop application with 8 professional modules: Tafel, Galvanic, EIS, Pitting, Inhibitor, Prediction, Comparison, and Data Import.",
-    author="oukil khaled ibn El-walid",
+    license_files=["LICENSE"],
+    description="Professional Corrosion Analysis Platform - 8 Modules: Tafel, Galvanic, EIS, Pitting, Inhibitor, Prediction, Comparison & Import",
+    author="Khaled Oukil",
     author_email="oukil.khaled@gmail.com",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -30,6 +30,7 @@ setup(
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Science/Research",
+        "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
