@@ -82,7 +82,7 @@ A comprehensive desktop application with 8 professional modules: Tafel, Galvanic
 
 
 ### 🕳️ Pitting Corrosion Analyzer
-<img src="screenshots/pitting_tab.png" alt="Corrosion Analyzer" width="800"/>
+<img src="screenshots/Pitting_tab.png" alt="Corrosion Analyzer" width="800"/>
 
 
 ### 🧪 Inhibitor Efficiency Calculator
