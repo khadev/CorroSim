@@ -78,15 +78,15 @@ A comprehensive desktop application with 8 professional modules: Tafel, Galvanic
 <img src="screenshots/comparison_tab.png" alt="Comparison" width="800"/>
 
 ### 🔬 EIS Impedance Spectroscopy
-<img src="screenshots/EIS_tab.png" alt="Tafel Analysis" width="800"/>
+<img src="screenshots/EIS_tab.png" alt="EIS Analysis" width="800"/>
 
 
 ### 🕳️ Pitting Corrosion Analyzer
-<img src="screenshots/pitting_tab.png" alt="Tafel Analysis" width="800"/>
+<img src="screenshots/pitting_tab.png" alt="Corrosion Analyzer" width="800"/>
 
 
 ### 🧪 Inhibitor Efficiency Calculator
-<img src="screenshots/inhibitor_tab.png" alt="Tafel Analysis" width="800"/>
+<img src="screenshots/inhibitor_tab.png" alt="Inhibitor Efficiency Calculator" width="800"/>
 
 </div>
 
