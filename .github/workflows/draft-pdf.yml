@@ -6,9 +6,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Setup Pandoc
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc pandoc-citeproc texlive-xetex texlive-latex-extra
       - name: Build PDF
         run: |
-          docker run --rm -v ${{ github.workspace }}:/data ghcr.io/openjournals/draft-pdf:latest paper.md
+          pandoc paper.md --citeproc --from=markdown --to=pdf --output=paper.pdf
       - uses: actions/upload-artifact@v4
         with:
           name: paper
