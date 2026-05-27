@@ -30,45 +30,33 @@ CorroSim is distributed via the Python Package Index (`pip install corrosim`) un
 
 # Statement of Need
 
-Electrochemical corrosion analysis is essential for materials selection, protective-coating design, and structural integrity assessment across aerospace, marine, energy, and civil infrastructure sectors [@stern1957; @bard2001]. Despite this importance, access to integrated corrosion software is uneven. Established commercial packages—including ZView, Gamry Echem Analyst, Nova, and ZSimpWin—are powerful but limited by high licensing costs (hundreds to thousands of US dollars per seat), closed-source code, and single-technique specialization [@orazem2017].
+Electrochemical corrosion analysis is essential for materials selection, protective-coating design, and structural integrity assessment across aerospace, marine, energy, and civil infrastructure sectors [@stern1957; @bard2001]. Despite this importance, access to integrated corrosion software is uneven. Established commercial packages—including ZView, Gamry Echem Analyst, Nova, and ZSimpWin—are powerful but limited by high licensing costs, closed-source code, and single-technique specialization [@orazem2017].
 
-Open-source electrochemical tools exist but are largely fragmented: individual Python scripts for Tafel fitting, standalone R packages for EIS, and web calculators for galvanic series lookup. None provide an integrated, validated, cross-platform desktop suite with a unified graphical interface, persistent database storage, and auditable source code.
-
-CorroSim fills this gap by offering a single, freely available platform that combines multiple corrosion analysis techniques. Its MIT license guarantees unrestricted use, modification, and redistribution. The MVC architecture and modular design enable community contributions, while PyPI distribution ensures reproducible installation across operating systems. The target audience includes graduate students learning electrochemical kinetics, researchers validating coatings, and field engineers requiring rapid corrosion-rate estimates.
+Open-source electrochemical tools exist but are largely fragmented. None provide an integrated, validated, cross-platform desktop suite with a unified graphical interface. CorroSim fills this gap by offering a single, freely available platform that combines multiple corrosion analysis techniques under the MIT license.
 
 # Features
 
-CorroSim provides eight integrated modules:
+1. **Tafel Analysis**: Extracts Ecorr, icorr, and Tafel slopes from polarization data using Butler-Volmer kinetics [@stern1957; @tafel1905]. Corrosion rate via Faraday's law per ASTM G102 [@astm102].
 
-1. **Tafel Analysis**: Extracts corrosion potential (Ecorr), corrosion current density (icorr), and Tafel slopes (βa, βc) from potentiodynamic polarization data using Butler-Volmer kinetics. Corrosion rate is calculated via Faraday's law per ASTM G102 [@astm102].
+2. **EIS Fitting**: Fits impedance spectra to Randles, Randles-CPE, and Randles-Warburg circuits using weighted CNLS [@randles1947; @orazem2017].
 
-2. **EIS Fitting**: Fits impedance spectra to equivalent circuit models (Randles, Randles-CPE, Randles-Warburg) using weighted complex nonlinear least squares. Supports Nyquist and Bode visualization.
+3. **Galvanic Simulation**: Predicts galvanic corrosion using mixed-potential theory and ASTM G82 database [@astm82; @hack1988].
 
-3. **Galvanic Simulation**: Predicts galvanic corrosion between dissimilar metals using mixed-potential theory and an embedded ASTM G82 galvanic series database [@astm82].
+4. **Pitting Analysis**: Estimates pitting potential per ASTM G61 [@astm61].
 
-4. **Pitting Analysis**: Estimates pitting potential and repassivation potential from cyclic polarization data per ASTM G61 [@astm61].
+5. **Inhibitor Efficiency**: Calculates IE% and fits Langmuir/Freundlich isotherms [@langmuir1918].
 
-5. **Inhibitor Efficiency**: Calculates inhibition efficiency from corrosion rates and fits Langmuir and Freundlich adsorption isotherms.
-
-6. **Lifetime Prediction**: Forecasts residual service life using power-law degradation models.
-
-7. **Sample Comparison**: Enables batch ranking of multiple samples across computed metrics with export to Excel.
-
-8. **Data Import**: Supports CSV and Excel file formats with automatic column detection.
+6. **Lifetime Prediction**, **Sample Comparison**, **Data Import**
 
 # Validation
 
-The numerical engines were validated against synthetic datasets with controlled noise:
-
-- **Tafel**: Ecorr recovered within 0.4%, icorr within 5.0%, Tafel slopes within 2% (R² = 0.9996)
-- **EIS**: Rs and Rct recovered within 0.1%, Cdl within 0.2% (R² = 0.9999)
-- **Galvanic**: Three metal couples tested against ASTM G82 — 100% match rate for polarity and severity
-
-All validation test scripts are included in the GitHub repository.
+- **Tafel**: Ecorr within 0.4%, icorr within 5.0% (R² = 0.9996)
+- **EIS**: Rs and Rct within 0.1% (R² = 0.9999)
+- **Galvanic**: 100% match with ASTM G82 for three couples
 
 # Availability
 
-CorroSim is available on PyPI (`pip install corrosim`) and GitHub (https://github.com/khadev/CorroSim) under the MIT license. It requires Python 3.8+ and runs on Windows, macOS, and Linux.
+CorroSim is available on PyPI (`pip install corrosim`) and GitHub (https://github.com/khadev/CorroSim) under the MIT license. Requires Python 3.8+.
 
 # Acknowledgements
 
