@@ -9,10 +9,10 @@ jobs:
       - name: Setup Pandoc
         run: |
           sudo apt-get update
-          sudo apt-get install -y pandoc pandoc-citeproc texlive-xetex texlive-latex-extra
+          sudo apt-get install -y pandoc texlive-xetex texlive-latex-extra lmodern
       - name: Build PDF
         run: |
-          pandoc paper.md --citeproc --from=markdown --to=pdf --output=paper.pdf
+          pandoc paper.md --from=markdown --to=pdf --pdf-engine=xelatex --output=paper.pdf
       - uses: actions/upload-artifact@v4
         with:
           name: paper
