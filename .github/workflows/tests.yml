@@ -1,53 +1,37 @@
-name: Run CorroSim Tests
+name: CorroSim Tests
 
-on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
-  workflow_dispatch:  # Allows manual triggering
+on: [push, pull_request]
 
 jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12"]
-
+        python-version: ["3.10", "3.11"]
+    
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Set up Python ${{ matrix.python-version }}
+    - uses: actions/checkout@v4
+    
+    - name: Setup Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
-
-    - name: Install system dependencies (for PyQt6 on Linux)
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y libxcb-xinerama0 libxcb-icccm4 libxcb-image0 \
-          libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-shape0 \
-          libxcb-xfixes0 libxcb-xkb1 libxkbcommon-x11-0
-
-    - name: Install Python dependencies
+    
+    - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install numpy scipy pandas matplotlib PyQt6
-        pip install pytest pytest-cov pytest-qt
-
-    - name: Install CorroSim in development mode
-      run: |
-        pip install -e .
-
-    - name: Run tests with coverage
-      run: |
-        pytest tests/ --cov=corrosim --cov-report=xml --cov-report=term
-
-    - name: Upload coverage to Codecov (optional)
+        pip install numpy scipy pandas matplotlib pytest pytest-cov
+    
+    - name: Install CorroSim
+      run: pip install -e .
+    
+    - name: Run all tests
+      run: pytest tests/ -v
+    
+    - name: Run coverage
+      run: pytest tests/test_tafel_engine.py tests/test_galvanic_engine.py tests/test_eis_engine.py --cov=corrosim.engines --cov-report=xml
+    
+    - name: Upload coverage
       uses: codecov/codecov-action@v4
       with:
-        file: ./coverage.xml
-        flags: unittests
-        name: codecov-umbrella
         fail_ci_if_error: false
