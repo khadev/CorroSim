@@ -1,0 +1,1 @@
+__pycache__/  *.pyc  dist/  *.egg-info/  rm -r --cached __pycache__ corrosim/__pycache__ corrosim/engines/__pycache__ corrosim/tabs/__pycache__ dist corrosim.egg-infogit add .gitignoregit commit -m "Add .gitignore and remove build artifacts"git push
