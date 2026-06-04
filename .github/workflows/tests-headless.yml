@@ -24,22 +24,19 @@ jobs:
         pip install numpy scipy pandas pytest pytest-cov
     
     - name: Install CorroSim
-      run: pip install -e .
+      run: |
+        pip install -e .
+        python -c "import corrosim; print('✅ CorroSim imported')"
     
-    - name: Verify installation
-      run: python -c "import corrosim; print('CorroSim version:', corrosim.__version__)"
+    - name: List test files
+      run: |
+        echo "Test files found:"
+        ls -la tests/*.py 2>/dev/null || echo "No test files found!"
     
-    - name: List tests
-      run: ls -la tests/
+    - name: Run tests with verbose output
+      run: |
+        python -m pytest tests/ -v --tb=short
     
-    - name: Run corrosion rate test
-      run: python -m pytest tests/test_corrosion_rate.py -v
-    
-    - name: Run Tafel tests
-      run: python -m pytest tests/test_tafel_engine.py -v
-    
-    - name: Run Galvanic tests
-      run: python -m pytest tests/test_galvanic_engine.py -v
-    
-    - name: Run EIS tests
-      run: python -m pytest tests/test_eis_engine.py -v
+    - name: Run coverage
+      run: |
+        python -m pytest tests/ --cov=corrosim.engines --cov-report=term --tb=short
