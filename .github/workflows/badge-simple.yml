@@ -1,0 +1,40 @@
+name: Badge (Simple)
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+    
+    - name: Install
+      run: |
+        pip install numpy scipy pandas pytest
+        pip install -e .
+    
+    - name: Test Tafel
+      run: python -m pytest tests/test_tafel_engine.py -v
+    
+    - name: Test Galvanic
+      run: python -m pytest tests/test_galvanic_engine.py -v
+    
+    - name: Test EIS
+      run: python -m pytest tests/test_eis_engine.py -v
+    
+    - name: Test Inhibitor
+      run: python -m pytest tests/test_inhibitor_engine.py -v
+    
+    - name: Test Pitting
+      run: python -m pytest tests/test_pitting_engine.py -v
+    
+    - name: Test Corrosion Rate
+      run: python -m pytest tests/test_corrosion_rate.py -v
