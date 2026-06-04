@@ -1,0 +1,44 @@
+name: Run CorroSim Engine Tests (Headless)
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install numpy scipy pandas matplotlib
+        pip install pytest pytest-cov
+
+    - name: Install CorroSim in development mode
+      run: |
+        pip install -e .
+
+    - name: Run engine tests only (skip GUI tests)
+      run: |
+        pytest tests/test_tafel_engine.py tests/test_galvanic_engine.py tests/test_eis_engine.py \
+          --cov=corrosim.engines --cov-report=term
+
+    - name: Upload coverage
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage.xml
+        fail_ci_if_error: false
