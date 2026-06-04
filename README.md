@@ -1,6 +1,7 @@
 
-# ⚡ CorroSim
-[![Tests](https://github.com/khadev/CorroSim/actions/workflows/badge.yml/badge.svg)](https://github.com/khadev/CorroSim/actions/workflows/badge.yml) - Professional Corrosion Analysis Platform
+# ⚡ CorroSim [![Tests](https://github.com/khadev/CorroSim/actions/workflows/badge.yml/badge.svg)](https://github.com/khadev/CorroSim/actions/workflows/badge.yml)
+
+- Professional Corrosion Analysis Platform
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
 [![PyQt6](https://img.shields.io/badge/PyQt-6.0+-green.svg)](https://www.riverbankcomputing.com/software/pyqt/)
