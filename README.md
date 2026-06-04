@@ -335,3 +335,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 
 **Built with ❤️ for the corrosion science community**
+
+## 🧪 Test Status
+
+[![Tests](https://github.com/khadev/CorroSim/actions/workflows/tests-headless.yml/badge.svg)](https://github.com/khadev/CorroSim/actions/workflows/tests-headless.yml)
