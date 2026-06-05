@@ -1,12 +1,12 @@
 
-# ⚡ CorroSim
+# ⚡ CorroSim [![Tests](https://github.com/khadev/CorroSim/actions/workflows/badge.yml/badge.svg)](https://github.com/khadev/CorroSim/actions/workflows/badge.yml)
 
-[![Tests](https://github.com/khadev/CorroSim/actions/workflows/tests.yml/badge.svg)](https://github.com/khadev/CorroSim/actions/workflows/tests.yml) - Professional Corrosion Analysis Platform
+- Professional Corrosion Analysis Platform
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
 [![PyQt6](https://img.shields.io/badge/PyQt-6.0+-green.svg)](https://www.riverbankcomputing.com/software/pyqt/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/khadev/CorroSim/blob/main/LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-Passing-brightgreen.svg)](https://github.com/khadev/CorroSim/blob/main/tests/test_tafel.py)
+[![Tests](https://img.shields.io/badge/Tests-Passing-brightgreen.svg)](https://github.com/khadev/CorroSim/blob/main/tests/test_tafel_engine.py)
 
 A comprehensive desktop application with 8 professional modules: Tafel, Galvanic, EIS, Pitting, Inhibitor, Prediction, Comparison, and Data Import.
 
