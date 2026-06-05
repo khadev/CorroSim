@@ -1,13 +1,12 @@
-
 # ⚡ CorroSim [![Tests](https://github.com/khadev/CorroSim/actions/workflows/badge.yml/badge.svg)](https://github.com/khadev/CorroSim/actions/workflows/badge.yml)
 
-- Professional Corrosion Analysis Platform
-  
-[![PyPI version](https://img.shields.io/pypi/v/corrosim.svg)](https://pypi.org/project/corrosim/)
+Professional Corrosion Analysis Platform
+
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
 [![PyQt6](https://img.shields.io/badge/PyQt-6.0+-green.svg)](https://www.riverbankcomputing.com/software/pyqt/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/khadev/CorroSim/blob/main/LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-Passing-brightgreen.svg)](https://github.com/khadev/CorroSim/blob/main/tests/test_tafel_engine.py)
+[![PyPI version](https://img.shields.io/pypi/v/corrosim.svg)](https://pypi.org/project/corrosim/)
+[![Downloads](https://img.shields.io/pypi/dm/corrosim.svg)](https://pypi.org/project/corrosim/)
 
 A comprehensive desktop application with 8 professional modules: Tafel, Galvanic, EIS, Pitting, Inhibitor, Prediction, Comparison, and Data Import.
 
@@ -18,6 +17,7 @@ A comprehensive desktop application with 8 professional modules: Tafel, Galvanic
 | ASTM G102 | Corrosion rate calculation | ✅ Passed (3.8% error) | [Script](validation/validate_astm_g102.py) |
 | ASTM G61 | Pitting potential detection | ✅ Capable | [Script](validation/validate_astm_g61.py) |
 | ASTM G82 | Galvanic series prediction | ✅ Passed | [Script](validation/validate_astm_g82.py) |
+
 ## ✨ Features
 
 ### 🔬 Tafel Polarization Analysis
@@ -80,7 +80,6 @@ A comprehensive desktop application with 8 professional modules: Tafel, Galvanic
 ### ⚡ Tafel Analysis
 <img src="screenshots/tafel_tab.png" alt="Tafel Analysis" width="800"/>
 
-
 ### 🔮 Lifetime Prediction
 <img src="screenshots/prediction_tab.png" alt="Prediction" width="800"/>
 
@@ -90,10 +89,8 @@ A comprehensive desktop application with 8 professional modules: Tafel, Galvanic
 ### 🔬 EIS Impedance Spectroscopy
 <img src="screenshots/EIS_tab.png" alt="EIS Analysis" width="800"/>
 
-
 ### 🕳️ Pitting Corrosion Analyzer
 <img src="screenshots/Pitting_tab.png" alt="Corrosion Analyzer" width="800"/>
-
 
 ### 🧪 Inhibitor Efficiency Calculator
 <img src="screenshots/inhibitor_tab.png" alt="Inhibitor Efficiency Calculator" width="800"/>
@@ -106,25 +103,22 @@ A comprehensive desktop application with 8 professional modules: Tafel, Galvanic
 - Python 3.8 or higher
 - pip package manager
 
-
 ### Option 1: Install from PyPI (Recommended)
 
-```
+```bash
 pip install corrosim
 corrosim
 ```
 
 To upgrade to the latest version:
-```
+
+```bash
 pip install --upgrade corrosim
 ```
 
-[![PyPI version](https://badge.fury.io/py/corrosim.svg)](https://pypi.org/project/corrosim/)
-[![Downloads](https://img.shields.io/pypi/dm/corrosim.svg)](https://pypi.org/project/corrosim/)
-
 ### Option 2: Install from GitHub
 
-```
+```bash
 git clone https://github.com/khadev/CorroSim.git
 cd CorroSim
 pip install -r requirements.txt
@@ -133,7 +127,7 @@ python run.py
 
 ### Option 3: Install as Development Package
 
-```
+```bash
 git clone https://github.com/khadev/CorroSim.git
 cd CorroSim
 pip install -e .
@@ -142,32 +136,48 @@ corrosim
 
 ### Option 4: Direct pip from GitHub
 
-```
+```bash
 pip install git+https://github.com/khadev/CorroSim.git
 corrosim
 ```
+
+## 🚀 Quick Start
+
+```python
+import numpy as np
+from corrosim.tafel_engine import TafelEngine
+
+# Synthetic Tafel data
+potential = np.linspace(-0.75, -0.25, 100)
+current = 10e-6 * np.exp(10 * (potential + 0.5))
+
+# Analyze
+result = TafelEngine.analyze(potential, current)
+print(f"Corrosion rate: {result['cr']:.4f} mm/year")
+```
+
 ## 📦 Dependencies
 
-txt
+```
 PyQt6>=6.5.0
 matplotlib>=3.7.0
 numpy>=1.24.0
 pandas>=2.0.0
 scipy>=1.10.0
 openpyxl>=3.1.0
-
+```
 
 ## 🧪 Running Tests
 
-```
-python tests/test_tafel.py
+```bash
+pytest tests/ -v
 ```
 
 Expected output:
 
-✓ Test data generation passed
-✓ All accuracy checks passed!
-
+```
+============================= 32 passed in 3.79s ==============================
+```
 
 ## 📖 Usage Guide
 
@@ -202,13 +212,14 @@ Expected output:
 4. Color-coded CR values: Green (low), Yellow (medium), Red (high)
 5. Export data to Excel
 
-### 5.🔗 Galvanic Corrosion Simulator (NEW in v1.1.0)
+### 5. 🔗 Galvanic Corrosion Simulator (NEW in v1.1.0)
 - 14 metals database from ASTM G82 galvanic series
 - Mixed potential theory calculations
 - Cathode/Anode area ratio effect
 - Real-time galvanic series bar chart
 - Severity classification per NACE SP0775
 - Engineering recommendations
+
 ### 6. 🔬 EIS Analysis
 1. Go to **🔬 EIS** tab
 2. Select circuit model or use Auto-Select
@@ -222,7 +233,7 @@ Expected output:
 3. Click **Analyze Pitting**
 4. View Epit, Erp, hysteresis
 
-### 8.🧪 Inhibitor Efficiency
+### 8. 🧪 Inhibitor Efficiency
 1. Go to **🧪 Inhibitor** tab
 2. Enter CR values or use data table
 3. Click **Auto-Fit Best Isotherm**
@@ -233,7 +244,7 @@ Expected output:
 ```
 corrosim/
 ├── corrosim/                    # Main package
-│   ├── __init__.py              # Package initialization (v1.5.0)
+│   ├── __init__.py              # Package initialization
 │   ├── main.py                  # Application entry point + splash screen
 │   ├── app.py                   # Main window controller (8 tabs)
 │   ├── theme.py                 # UI styling (light + dark themes)
@@ -258,15 +269,24 @@ corrosim/
 │   │   └── inhibitor_tab.py     # Inhibitor efficiency + synergy
 │   └── utils/                   # Utility modules
 │       ├── __init__.py
-│       └── constants.py         # Physical/electrochemical constants
-├── tests/                       # Test suite
+│       ├── constants.py         # Physical/electrochemical constants
+│       └── units.py             # Unit conversion helpers
+├── tests/                       # Test suite (32 passing tests)
 │   ├── __init__.py
-│   └── test_tafel.py            # Tafel engine validation (R^2 > 0.999)
+│   ├── test_corrosion_rate.py
+│   ├── test_tafel_engine.py
+│   ├── test_galvanic_engine.py
+│   ├── test_eis_engine.py
+│   ├── test_inhibitor_engine.py
+│   └── test_pitting_engine.py
+├── validation/                  # ASTM validation scripts
+│   ├── validate_astm_g102.py
+│   ├── validate_astm_g61.py
+│   └── validate_astm_g82.py
 ├── screenshots/                 # Application screenshots
-├── dist/                        # Built packages for PyPI
 ├── requirements.txt             # Python dependencies
-├── setup.py                     # Package setup script (pip install)
-├── run.py                       # Quick launcher (python run.py)
+├── setup.py                     # Package setup script
+├── run.py                       # Quick launcher
 ├── README.md                    # Full documentation
 ├── LICENSE                      # MIT License
 └── .gitignore                   # Git ignore rules
@@ -298,10 +318,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👤 Author
 
-**Khaled Oukil**
+**Khaled ibn el-walid Oukil**
 - GitHub: [@khadev](https://github.com/khadev)
 - Email: oukil.khaled@gmail.com
-
 
 ## 📚 References
 
@@ -341,9 +360,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 19. Matplotlib: Hunter, J. D. (2007). Matplotlib: A 2D Graphics Environment. *Computing in Science & Engineering*, 9(3), 90-95.
 20. SciPy: Virtanen, P., et al. (2020). SciPy 1.0: Fundamental Algorithms for Scientific Computing in Python. *Nature Methods*, 17, 261-272.
 
-
 **Built with ❤️ for the corrosion science community**
-
-## 🧪 Test Status
-
-[![Tests](https://github.com/khadev/CorroSim/actions/workflows/tests-headless.yml/badge.svg)](https://github.com/khadev/CorroSim/actions/workflows/tests-headless.yml)
