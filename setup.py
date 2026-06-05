@@ -17,7 +17,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="corrosim",
-    version="1.5.2",
+    version="1.6.1",
     license="MIT",
     license_files=["LICENSE"],
     description="Professional Corrosion Analysis Platform - 8 Modules: Tafel, Galvanic, EIS, Pitting, Inhibitor, Prediction, Comparison & Import",
