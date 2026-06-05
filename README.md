@@ -10,6 +10,13 @@
 
 A comprehensive desktop application with 8 professional modules: Tafel, Galvanic, EIS, Pitting, Inhibitor, Prediction, Comparison, and Data Import.
 
+## 📜 ASTM Validation
+
+| Standard | Description | Status | Validation |
+| :--- | :--- | :--- | :--- |
+| ASTM G102 | Corrosion rate calculation | ✅ Passed (3.8% error) | [Script](validation/validate_astm_g102.py) |
+| ASTM G61 | Pitting potential detection | ✅ Capable | [Script](validation/validate_astm_g61.py) |
+| ASTM G82 | Galvanic series prediction | ✅ Passed | [Script](validation/validate_astm_g82.py) |
 ## ✨ Features
 
 ### 🔬 Tafel Polarization Analysis
