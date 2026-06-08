@@ -6,7 +6,7 @@ Professional Corrosion Analysis Platform
 [![PyQt6](https://img.shields.io/badge/PyQt-6.0+-green.svg)](https://www.riverbankcomputing.com/software/pyqt/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/khadev/CorroSim/blob/main/LICENSE)
 [![PyPI version](https://img.shields.io/pypi/v/corrosim.svg)](https://pypi.org/project/corrosim/)
-[![Downloads](https://img.shields.io/pypi/dm/corrosim.svg)](https://pypi.org/project/corrosim/)
+[![Downloads](https://img.shields.io/pypi/dm/corrosim)](https://pypi.org/project/corrosim/)
 
 A comprehensive desktop application with 8 professional modules: Tafel, Galvanic, EIS, Pitting, Inhibitor, Prediction, Comparison, and Data Import.
 
